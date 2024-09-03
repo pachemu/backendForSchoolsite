@@ -74,6 +74,23 @@ app.put('/quizzes/:id', (req, res) => {
 
     res.json(quiz);
 });
+let users = [
+    { username: 'Дэб', password: 'Dab' },
+    { username: 'user2', password: 'password2' }
+];
+
+// Эндпоинт для аутентификации
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if (user) {
+        res.json({ success: true, username: user.username });
+    } else {
+        res.status(401).json({ success: false, message: 'Некорректный логин или пароль' });
+    }
+});
 
 // Эндпоинт для удаления квиза
 app.delete('/quizzes/:id', (req, res) => {
@@ -88,6 +105,4 @@ app.delete('/quizzes/:id', (req, res) => {
     res.json({ message: 'Quiz deleted successfully' });
 });
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-});
+module.exports = app;

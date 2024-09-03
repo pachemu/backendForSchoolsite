@@ -8,7 +8,7 @@ app.use(cors());
 
 // Или можно настроить CORS для конкретного источника:
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:7777');
+    res.header('Access-Control-Allow-Origin', 'https://my-school-site-kx19.vercel.app/');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
@@ -74,6 +74,19 @@ app.put('/quizzes/:id', (req, res) => {
 
     res.json(quiz);
 });
+
+// Эндпоинт для удаления квиза
+app.delete('/quizzes/:id', (req, res) => {
+    const { id } = req.params;
+    const quizIndex = quizzes.findIndex(q => q.id === parseInt(id));
+
+    if (quizIndex === -1) {
+        return res.status(404).json({ error: 'Quiz not found' });
+    }
+
+    quizzes.splice(quizIndex, 1);
+    res.json({ message: 'Quiz deleted successfully' });
+});
 let users = [
     { username: 'Дэб', password: 'Dab' },
     { username: 'user2', password: 'password2' }
@@ -90,19 +103,6 @@ app.post('/login', (req, res) => {
     } else {
         res.status(401).json({ success: false, message: 'Некорректный логин или пароль' });
     }
-});
-
-// Эндпоинт для удаления квиза
-app.delete('/quizzes/:id', (req, res) => {
-    const { id } = req.params;
-    const quizIndex = quizzes.findIndex(q => q.id === parseInt(id));
-
-    if (quizIndex === -1) {
-        return res.status(404).json({ error: 'Quiz not found' });
-    }
-
-    quizzes.splice(quizIndex, 1);
-    res.json({ message: 'Quiz deleted successfully' });
 });
 
 module.exports = app;

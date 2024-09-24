@@ -1,18 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+
 const app = express();
 
-app.use(bodyParser.json());
-app.use(cors());
+app.use(cors()); // Разрешаем все источники
 
-// Или можно настроить CORS для конкретного источника:
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://my-school-site-kx19.vercel.app/');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
+app.use(bodyParser.json());
+
+// Весь остальной код вашего приложения (энпоинты, обработчики и т.д.)
+
 // Хранилище квизов в памяти
 let quizzes = [];
 let currentId = 1;
@@ -75,6 +72,19 @@ app.put('/quizzes/:id', (req, res) => {
     res.json(quiz);
 });
 
+// Эндпоинт для аутентификации
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if (user) {
+        res.json({ success: true, username: user.username });
+    } else {
+        res.status(401).json({ success: false, message: 'Некорректный логин или пароль' });
+    }
+});
+
 // Эндпоинт для удаления квиза
 app.delete('/quizzes/:id', (req, res) => {
     const { id } = req.params;
@@ -87,22 +97,9 @@ app.delete('/quizzes/:id', (req, res) => {
     quizzes.splice(quizIndex, 1);
     res.json({ message: 'Quiz deleted successfully' });
 });
-let users = [
-    { username: 'Дэб', password: 'Dab' },
-    { username: 'user2', password: 'password2' }
-];
 
-// Эндпоинт для аутентификации
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-
-    const user = users.find(u => u.username === username && u.password === password);
-
-    if (user) {
-        res.json({ success: true, username: user.username });
-    } else {
-        res.status(401).json({ success: false, message: 'Некорректный логин или пароль' });
-    }
+app.listen(3000, () => {
+    console.log('Сервер запущен на порту 3000');
 });
 
 module.exports = app;
